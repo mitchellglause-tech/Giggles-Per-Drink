@@ -1,0 +1,4 @@
+node_modules/
+gpd.db
+*.log
+.DS_Store

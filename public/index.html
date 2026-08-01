@@ -1,0 +1,579 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Giggles Per Drink</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Monoton&family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#14101c;
+  --ink-2:#1c1626;
+  --pink:#ff3d8f;
+  --cyan:#4de8d4;
+  --amber:#ffb627;
+  --paper:#f5efe3;
+  --paper-line: rgba(20,16,28,0.14);
+}
+*{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
+html,body{margin:0;height:100%;}
+body{
+  background:
+    radial-gradient(circle at 15% 0%, rgba(255,61,143,0.16), transparent 45%),
+    radial-gradient(circle at 85% 15%, rgba(77,232,212,0.14), transparent 45%),
+    var(--ink);
+  color:var(--paper);
+  font-family:'Space Grotesk', system-ui, sans-serif;
+  min-height:100vh;
+  padding-bottom: env(safe-area-inset-bottom);
+}
+.mono{ font-family:'JetBrains Mono', monospace; }
+.neon{
+  font-family:'Monoton', cursive;
+  letter-spacing:1px;
+  line-height:1.1;
+  color:var(--paper);
+  text-shadow:
+    0 0 4px var(--pink),
+    0 0 14px var(--pink),
+    0 0 28px rgba(255,61,143,0.6),
+    0 0 2px var(--cyan);
+}
+.wrap{ max-width:480px; margin:0 auto; padding:28px 18px 40px; min-height:100vh; display:flex; flex-direction:column;}
+.center-flex{ flex:1; display:flex; flex-direction:column; justify-content:center; }
+
+/* --- top brand --- */
+.brand{ text-align:center; margin-bottom:22px; }
+.brand h1{ font-size:clamp(28px, 8vw, 40px); margin:0 0 4px; }
+.brand p{ margin:0; opacity:0.6; font-size:13px; letter-spacing:0.14em; text-transform:uppercase; color:var(--cyan); }
+
+/* --- cards / buttons --- */
+.stack{ display:flex; flex-direction:column; gap:12px; }
+input[type=text]{
+  width:100%; padding:16px 14px; border-radius:10px; border:1px solid rgba(245,239,227,0.18);
+  background:var(--ink-2); color:var(--paper); font-family:inherit; font-size:17px;
+  outline:none;
+}
+input[type=text]:focus{ border-color:var(--cyan); box-shadow:0 0 0 3px rgba(77,232,212,0.15); }
+input[type=text]::placeholder{ color:rgba(245,239,227,0.35); }
+
+button{ font-family:inherit; cursor:pointer; border:none; }
+.btn{
+  padding:17px 16px; border-radius:10px; font-size:16px; font-weight:600;
+  background:var(--ink-2); color:var(--paper); border:1px solid rgba(245,239,227,0.14);
+  display:flex; align-items:center; justify-content:space-between; gap:10px;
+  transition:transform .08s ease, border-color .15s ease;
+}
+.btn:active{ transform:scale(0.98); }
+.btn .arrow{ opacity:0.5; }
+.btn.primary{ background:var(--pink); color:var(--ink); border-color:var(--pink); font-weight:700;}
+.btn.cyan{ background:var(--cyan); color:var(--ink); border-color:var(--cyan); font-weight:700;}
+.btn.ghost{ background:transparent; border:1px solid rgba(245,239,227,0.22); }
+.btn.small{ padding:11px 14px; font-size:14px; }
+.btn:disabled{ opacity:0.4; }
+
+.profile-chip{
+  display:flex; align-items:center; gap:12px; background:var(--ink-2); border:1px solid rgba(245,239,227,0.1);
+  border-radius:14px; padding:14px 16px; margin-bottom:20px;
+}
+.profile-chip .avatar{ font-size:34px; line-height:1; }
+.profile-chip .meta{ flex:1; }
+.profile-chip .name{ font-weight:700; font-size:17px; }
+.profile-chip .stats{ font-size:12px; opacity:0.6; margin-top:2px;}
+.profile-chip .logout{ font-size:12px; opacity:0.5; text-decoration:underline; background:none; color:var(--paper);}
+
+.error{ background:rgba(255,61,143,0.12); border:1px solid var(--pink); color:#ffd0e4; padding:10px 12px; border-radius:8px; font-size:14px; }
+
+/* --- receipt / bar tab --- */
+.receipt{
+  background:var(--paper);
+  color:var(--ink);
+  border-radius:2px;
+  position:relative;
+  padding:22px 20px 20px;
+  box-shadow:0 20px 40px rgba(0,0,0,0.35);
+}
+.receipt::before, .receipt::after{
+  content:"";
+  position:absolute; left:0; right:0; height:9px;
+  background:
+    linear-gradient(135deg, var(--paper) 50%, transparent 50%) 0 0/10px 10px repeat-x,
+    linear-gradient(-135deg, var(--paper) 50%, transparent 50%) 0 0/10px 10px repeat-x;
+  background-color:var(--ink);
+}
+.receipt::before{ top:-9px; transform:rotate(180deg); }
+.receipt::after{ bottom:-9px; }
+.receipt .code-row{ display:flex; justify-content:space-between; align-items:baseline; margin-bottom:10px;}
+.receipt .code-label{ font-size:11px; letter-spacing:0.12em; text-transform:uppercase; opacity:0.55;}
+.receipt .code-value{ font-family:'JetBrains Mono',monospace; font-weight:700; font-size:20px; letter-spacing:0.06em;}
+.dash{ border-top:2px dashed var(--paper-line); margin:12px 0; }
+.gpd-hero{ text-align:center; padding:8px 0 14px; }
+.gpd-hero .label{ font-size:12px; letter-spacing:0.14em; text-transform:uppercase; opacity:0.55; margin-bottom:4px;}
+.gpd-hero .value{ font-family:'JetBrains Mono',monospace; font-size:56px; font-weight:700; line-height:1; }
+.gpd-hero .sub{ font-size:12px; opacity:0.55; margin-top:6px;}
+.stat-grid{ display:grid; grid-template-columns:1fr 1fr; gap:10px 16px; margin:6px 0 4px;}
+.stat{ display:flex; justify-content:space-between; font-family:'JetBrains Mono',monospace; font-size:14px; border-bottom:1px dotted var(--paper-line); padding-bottom:6px;}
+.stat .k{ opacity:0.55; }
+.stat .v{ font-weight:700; }
+.receipt-footer{ text-align:center; font-size:11px; opacity:0.45; margin-top:14px; letter-spacing:0.08em;}
+
+/* --- action grids in active tab --- */
+.section-label{ font-size:12px; letter-spacing:0.12em; text-transform:uppercase; color:var(--cyan); margin:22px 0 10px; }
+.grid2{ display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+.tier-btn{
+  padding:14px 10px; border-radius:12px; text-align:left; background:var(--ink-2);
+  border:1px solid rgba(245,239,227,0.1); color:var(--paper);
+}
+.tier-btn .pts{ font-family:'JetBrains Mono',monospace; font-size:12px; opacity:0.6; display:block; margin-top:2px;}
+.tier-btn.chuckle{ border-left:4px solid #8ee6d8; }
+.tier-btn.giggle{ border-left:4px solid var(--cyan); }
+.tier-btn.cackle{ border-left:4px solid var(--amber); }
+.tier-btn.wheeze{ border-left:4px solid #ff8a4d; }
+.tier-btn.legendary{ border-left:4px solid var(--pink); grid-column:1 / -1; display:flex; align-items:center; justify-content:space-between;}
+.drink-btn{ padding:18px 10px; border-radius:12px; background:var(--ink-2); border:1px solid rgba(245,239,227,0.1); color:var(--paper); font-weight:600; text-align:center;}
+.drink-btn .units{ display:block; font-family:'JetBrains Mono',monospace; font-size:11px; opacity:0.55; margin-top:3px;}
+.pop{ animation:pop .28s ease; }
+@keyframes pop{ 0%{ transform:scale(1);} 40%{ transform:scale(1.04);} 100%{ transform:scale(1);} }
+
+.ranking{ display:flex; flex-direction:column; gap:8px; margin-top:6px;}
+.rank-row{ display:flex; align-items:center; gap:10px; background:var(--ink-2); border-radius:10px; padding:10px 12px; border:1px solid rgba(245,239,227,0.08);}
+.rank-row .pos{ font-family:'JetBrains Mono',monospace; opacity:0.5; width:18px;}
+.rank-row .av{ font-size:20px; }
+.rank-row .nm{ flex:1; font-weight:600; }
+.rank-row .pt{ font-family:'JetBrains Mono',monospace; color:var(--amber); font-weight:700;}
+.rank-row.me{ border-color:var(--cyan); }
+
+.tabs{ display:flex; gap:8px; margin-bottom:16px; }
+.tabs button{ flex:1; padding:10px; border-radius:10px; background:var(--ink-2); color:var(--paper); font-weight:600; opacity:0.55; border:1px solid transparent;}
+.tabs button.active{ opacity:1; border-color:var(--cyan); color:var(--cyan); }
+
+.lb-row{ display:flex; align-items:center; gap:12px; background:var(--ink-2); border-radius:12px; padding:12px 14px; margin-bottom:8px; border:1px solid rgba(245,239,227,0.08);}
+.lb-row .rank{ font-family:'JetBrains Mono',monospace; opacity:0.45; width:22px;}
+.lb-row .info{ flex:1; }
+.lb-row .info .t1{ font-weight:700; }
+.lb-row .info .t2{ font-size:12px; opacity:0.55; margin-top:2px;}
+.lb-row .val{ font-family:'JetBrains Mono',monospace; color:var(--amber); font-weight:700; text-align:right;}
+.lb-row .val small{ display:block; font-size:10px; opacity:0.55; color:var(--paper); font-weight:400;}
+
+.topbar{ display:flex; align-items:center; justify-content:space-between; margin-bottom:18px;}
+.back{ background:none; color:var(--paper); opacity:0.6; font-size:14px; display:flex; gap:6px; align-items:center;}
+.hidden{ display:none !important; }
+.empty{ text-align:center; opacity:0.5; padding:30px 10px; font-size:14px;}
+.toast{
+  position:fixed; left:50%; bottom:24px; transform:translateX(-50%);
+  background:var(--amber); color:var(--ink); font-weight:700; padding:10px 16px; border-radius:10px;
+  font-size:14px; box-shadow:0 10px 30px rgba(0,0,0,0.4); opacity:0; pointer-events:none; transition:opacity .2s ease, bottom .2s ease;
+  z-index:50;
+}
+.toast.show{ opacity:1; bottom:34px; }
+</style>
+</head>
+<body>
+<div class="wrap" id="app"></div>
+<div class="toast" id="toast"></div>
+
+<script>
+const API = '';
+const state = { view:'landing', profile:null, room:null, error:null, pollTimer:null, lbTab:'nights', lbData:null };
+
+function saveName(n){ localStorage.setItem('gpd_name', n); }
+function loadName(){ return localStorage.getItem('gpd_name') || ''; }
+function saveRoom(code){ localStorage.setItem('gpd_room', code || ''); }
+function loadRoom(){ return localStorage.getItem('gpd_room') || ''; }
+
+function toast(msg){
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(t._h);
+  t._h = setTimeout(()=> t.classList.remove('show'), 2200);
+}
+
+async function api(path, opts){
+  const res = await fetch(API + path, {
+    method: opts && opts.method || 'GET',
+    headers: {'Content-Type':'application/json'},
+    body: opts && opts.body ? JSON.stringify(opts.body) : undefined
+  });
+  const data = await res.json().catch(()=>({}));
+  if(!res.ok){ throw new Error(data.error || 'Something went wrong'); }
+  return data;
+}
+
+function stopPoll(){ if(state.pollTimer){ clearInterval(state.pollTimer); state.pollTimer=null; } }
+
+function go(view){
+  state.view = view;
+  state.error = null;
+  render();
+}
+
+// ---------- boot ----------
+async function boot(){
+  const name = loadName();
+  if(name){
+    try{
+      state.profile = await api('/api/profile', {method:'POST', body:{name}});
+      const room = loadRoom();
+      if(room){
+        try{
+          const r = await api('/api/rooms/' + room);
+          if(r.status === 'active'){
+            state.room = r;
+            await api('/api/rooms/'+room+'/join', {method:'POST', body:{name}});
+            go('tab');
+            startPolling();
+            return;
+          } else { saveRoom(''); }
+        }catch(e){ saveRoom(''); }
+      }
+      go('home');
+      return;
+    }catch(e){ /* fall through to landing */ }
+  }
+  go('landing');
+}
+
+function startPolling(){
+  stopPoll();
+  state.pollTimer = setInterval(async ()=>{
+    if(state.view === 'tab' && state.room){
+      try{
+        const r = await api('/api/rooms/' + state.room.code);
+        state.room = r;
+        if(r.status !== 'active'){
+          stopPoll();
+          saveRoom('');
+          toast('This tab was closed by the owner');
+          go('home');
+          return;
+        }
+        renderTabLive();
+      }catch(e){ /* room may have vanished; ignore transient errors */ }
+    }
+  }, 3000);
+}
+
+// ---------- render root ----------
+function render(){
+  const app = document.getElementById('app');
+  if(state.view === 'landing') app.innerHTML = viewLanding();
+  else if(state.view === 'home') app.innerHTML = viewHome();
+  else if(state.view === 'join') app.innerHTML = viewJoin();
+  else if(state.view === 'tab') app.innerHTML = viewTab();
+  else if(state.view === 'leaderboard') app.innerHTML = viewLeaderboard();
+  bindEvents();
+}
+
+// ---------- LANDING ----------
+function viewLanding(){
+  return `
+  <div class="center-flex">
+    <div class="brand">
+      <h1 class="neon">Giggles<br/>Per Drink</h1>
+      <p>tonight's tab, tallied live</p>
+    </div>
+    <div class="stack">
+      <input type="text" id="nameInput" placeholder="What's your name?" maxlength="24" autocomplete="off" />
+      ${state.error ? `<div class="error">${state.error}</div>` : ''}
+      <button class="btn primary" id="enterBtn">Pull up a stool <span class="arrow">→</span></button>
+    </div>
+  </div>`;
+}
+
+// ---------- HOME ----------
+function viewHome(){
+  const p = state.profile;
+  return `
+  <div>
+    <div class="profile-chip">
+      <div class="avatar">${p.avatar}</div>
+      <div class="meta">
+        <div class="name">${p.name}</div>
+        <div class="stats mono">${Math.round(p.lifetime_points*10)/10} lifetime pts · ${p.nights_played} nights</div>
+      </div>
+      <button class="logout" id="logoutBtn">switch</button>
+    </div>
+    <div class="stack">
+      <button class="btn primary" id="startBtn">Start a tab <span class="arrow">→</span></button>
+      <button class="btn cyan" id="joinBtn">Join a tab <span class="arrow">→</span></button>
+      <button class="btn ghost" id="lbBtn">Leaderboard <span class="arrow">→</span></button>
+    </div>
+    ${state.error ? `<div class="error" style="margin-top:12px;">${state.error}</div>` : ''}
+  </div>`;
+}
+
+// ---------- JOIN ----------
+function viewJoin(){
+  return `
+  <div>
+    <div class="topbar">
+      <button class="back" id="backBtn">← back</button>
+    </div>
+    <div class="brand" style="margin-bottom:26px;">
+      <h1 class="neon" style="font-size:26px;">Join a Tab</h1>
+    </div>
+    <div class="stack">
+      <input type="text" id="codeInput" placeholder="Room code (e.g. 7XQK)" maxlength="4" autocomplete="off" style="text-transform:uppercase; letter-spacing:0.1em; text-align:center; font-family:'JetBrains Mono',monospace; font-size:22px;" />
+      ${state.error ? `<div class="error">${state.error}</div>` : ''}
+      <button class="btn cyan" id="joinSubmit">Join tab <span class="arrow">→</span></button>
+    </div>
+  </div>`;
+}
+
+// ---------- ACTIVE TAB ----------
+function isOwner(){ return state.room && state.profile && state.room.owner === state.profile.name; }
+
+function tierBtn(key,label,pts,cls){
+  return `<button class="tier-btn ${cls}" data-giggle="${key}"><span>${label}</span><span class="pts">${pts} pt${pts===1?'':'s'}</span></button>`;
+}
+
+function viewTab(){
+  const r = state.room;
+  const owner = isOwner();
+  return `
+  <div>
+    <div class="topbar">
+      <button class="back" id="leaveBtn">← leave tab</button>
+      ${owner ? `<button class="btn small ghost" id="closeBtn">Close out</button>` : `<span></span>`}
+    </div>
+
+    <div class="receipt" id="receipt">
+      <div class="code-row">
+        <span class="code-label">Tab #${r.code}</span>
+        <span class="code-value">${owner ? '👑 you' : '🍸 friend'}</span>
+      </div>
+      <div class="dash"></div>
+      <div class="gpd-hero">
+        <div class="label">Giggles Per Drink</div>
+        <div class="value mono" id="gpdVal">${r.gpd.toFixed(2)}</div>
+        <div class="sub">hosted by ${r.owner}</div>
+      </div>
+      <div class="dash"></div>
+      <div class="stat-grid mono">
+        <div class="stat"><span class="k">Giggle Score</span><span class="v" id="statGiggle">${r.giggle_score.toFixed(1)}</span></div>
+        <div class="stat"><span class="k">Drink Units</span><span class="v" id="statDrinks">${r.drink_units.toFixed(1)}</span></div>
+        <div class="stat"><span class="k">Shots Taken</span><span class="v" id="statShots">${r.shots}</span></div>
+        <div class="stat"><span class="k">Giggles / Hr</span><span class="v" id="statPerHour">${r.giggles_per_hour}</span></div>
+      </div>
+      <div class="receipt-footer">thanks for coming out ♥ keep it classy</div>
+    </div>
+
+    ${owner ? `
+    <div class="section-label">Log a drink</div>
+    <div class="grid2">
+      <button class="drink-btn" data-drink="beer">🍺 Beer<span class="units">1.0 unit</span></button>
+      <button class="drink-btn" data-drink="wine">🍷 Wine<span class="units">1.0 unit</span></button>
+      <button class="drink-btn" data-drink="cocktail">🍹 Cocktail<span class="units">1.5 units</span></button>
+      <button class="drink-btn" data-drink="shot">🥃 Shot<span class="units">1.0 unit</span></button>
+    </div>
+    ` : `
+    <div class="section-label">Log a giggle</div>
+    <div class="grid2">
+      ${tierBtn('chuckle','😤 Chuckle','0.5','chuckle')}
+      ${tierBtn('giggle','😄 Giggle','1','giggle')}
+      ${tierBtn('cackle','😆 Cackle','2','cackle')}
+      ${tierBtn('wheeze','🤣 Wheeze','3','wheeze')}
+      ${tierBtn('legendary','🏆 Legendary','5','legendary')}
+    </div>
+    `}
+
+    <div class="section-label">In this tab</div>
+    <div class="ranking" id="ranking">${renderRanking(r)}</div>
+  </div>`;
+}
+
+function renderRanking(r){
+  if(!r.participants.length) return `<div class="empty">No friends have joined yet — share code <b>${r.code}</b></div>`;
+  return r.participants.map((p,i)=>`
+    <div class="rank-row ${state.profile && p.name===state.profile.name ? 'me':''}">
+      <span class="pos mono">${i+1}</span>
+      <span class="av">${p.avatar}</span>
+      <span class="nm">${p.name}</span>
+      <span class="pt mono">${p.points.toFixed(1)} pts</span>
+    </div>`).join('');
+}
+
+function renderTabLive(){
+  if(state.view !== 'tab') return;
+  const r = state.room;
+  const gpdEl = document.getElementById('gpdVal');
+  if(!gpdEl) return; // view changed under us
+  gpdEl.textContent = r.gpd.toFixed(2);
+  document.getElementById('statGiggle').textContent = r.giggle_score.toFixed(1);
+  document.getElementById('statDrinks').textContent = r.drink_units.toFixed(1);
+  document.getElementById('statShots').textContent = r.shots;
+  document.getElementById('statPerHour').textContent = r.giggles_per_hour;
+  document.getElementById('ranking').innerHTML = renderRanking(r);
+}
+
+// ---------- LEADERBOARD ----------
+function viewLeaderboard(){
+  return `
+  <div>
+    <div class="topbar">
+      <button class="back" id="backBtn">← back</button>
+    </div>
+    <div class="brand" style="margin-bottom:18px;">
+      <h1 class="neon" style="font-size:26px;">Leaderboard</h1>
+    </div>
+    <div class="tabs">
+      <button data-lb="nights" class="${state.lbTab==='nights'?'active':''}">Best Nights</button>
+      <button data-lb="friends" class="${state.lbTab==='friends'?'active':''}">Funniest Friends</button>
+    </div>
+    <div id="lbList">${renderLbList()}</div>
+  </div>`;
+}
+
+function renderLbList(){
+  const data = state.lbData;
+  if(!data) return `<div class="empty">Loading…</div>`;
+  if(state.lbTab === 'nights'){
+    if(!data.nights.length) return `<div class="empty">No nights closed out yet. Be the first!</div>`;
+    return data.nights.map((n,i)=>`
+      <div class="lb-row">
+        <span class="rank mono">${i+1}</span>
+        <div class="info">
+          <div class="t1">${n.owner}'s tab</div>
+          <div class="t2">${new Date(n.date).toLocaleDateString()} · MVP ${n.mvp || '—'}</div>
+        </div>
+        <div class="val">${n.gpd.toFixed(2)}<small>GPD</small></div>
+      </div>`).join('');
+  } else {
+    if(!data.friends.length) return `<div class="empty">No profiles yet.</div>`;
+    return data.friends.map((f,i)=>`
+      <div class="lb-row">
+        <span class="rank mono">${i+1}</span>
+        <div class="info">
+          <div class="t1">${f.avatar} ${f.name}</div>
+          <div class="t2">${f.nights_played} nights · best ${f.best_night.toFixed(1)} pts</div>
+        </div>
+        <div class="val">${f.lifetime_points.toFixed(1)}<small>pts</small></div>
+      </div>`).join('');
+  }
+}
+
+async function loadLeaderboard(){
+  try{
+    const [nights, friends] = await Promise.all([
+      api('/api/leaderboard/nights'),
+      api('/api/leaderboard/friends')
+    ]);
+    state.lbData = {nights, friends};
+    document.getElementById('lbList').innerHTML = renderLbList();
+  }catch(e){ /* ignore */ }
+}
+
+// ---------- events ----------
+function bindEvents(){
+  const app = document.getElementById('app');
+
+  if(state.view === 'landing'){
+    document.getElementById('enterBtn').onclick = async ()=>{
+      const val = document.getElementById('nameInput').value.trim();
+      if(!val){ state.error='Enter a name to continue'; render(); return; }
+      try{
+        state.profile = await api('/api/profile', {method:'POST', body:{name:val}});
+        saveName(val);
+        go('home');
+      }catch(e){ state.error = e.message; render(); }
+    };
+    document.getElementById('nameInput').addEventListener('keydown', e=>{ if(e.key==='Enter') document.getElementById('enterBtn').click(); });
+  }
+
+  if(state.view === 'home'){
+    document.getElementById('startBtn').onclick = async ()=>{
+      try{
+        const r = await api('/api/rooms', {method:'POST', body:{owner: state.profile.name}});
+        state.room = r;
+        saveRoom(r.code);
+        go('tab');
+        startPolling();
+      }catch(e){ state.error = e.message; render(); }
+    };
+    document.getElementById('joinBtn').onclick = ()=> go('join');
+    document.getElementById('lbBtn').onclick = ()=>{ go('leaderboard'); loadLeaderboard(); };
+    document.getElementById('logoutBtn').onclick = ()=>{
+      localStorage.removeItem('gpd_name');
+      state.profile = null;
+      go('landing');
+    };
+  }
+
+  if(state.view === 'join'){
+    document.getElementById('backBtn').onclick = ()=> go('home');
+    document.getElementById('joinSubmit').onclick = async ()=>{
+      const code = document.getElementById('codeInput').value.trim().toUpperCase();
+      if(!code){ state.error='Enter a room code'; render(); return; }
+      try{
+        const r = await api('/api/rooms/'+code+'/join', {method:'POST', body:{name: state.profile.name}});
+        state.room = r;
+        saveRoom(r.code);
+        go('tab');
+        startPolling();
+      }catch(e){ state.error = e.message; render(); }
+    };
+    document.getElementById('codeInput').addEventListener('keydown', e=>{ if(e.key==='Enter') document.getElementById('joinSubmit').click(); });
+  }
+
+  if(state.view === 'tab'){
+    document.getElementById('leaveBtn').onclick = ()=>{
+      stopPoll();
+      saveRoom('');
+      go('home');
+    };
+    const closeBtn = document.getElementById('closeBtn');
+    if(closeBtn){
+      closeBtn.onclick = async ()=>{
+        if(!confirm('Close out this tab for everyone? This finalizes the night.')) return;
+        try{
+          const r = await api('/api/rooms/'+state.room.code+'/close', {method:'POST', body:{name: state.profile.name}});
+          stopPoll();
+          saveRoom('');
+          toast('Tab closed — GPD ' + r.gpd.toFixed(2));
+          // refresh profile stats
+          state.profile = await api('/api/profile', {method:'POST', body:{name: state.profile.name}});
+          go('home');
+        }catch(e){ toast(e.message); }
+      };
+    }
+    app.querySelectorAll('[data-drink]').forEach(btn=>{
+      btn.onclick = async ()=>{
+        btn.classList.add('pop');
+        setTimeout(()=>btn.classList.remove('pop'), 280);
+        try{
+          const r = await api('/api/rooms/'+state.room.code+'/drink', {method:'POST', body:{name: state.profile.name, type: btn.dataset.drink}});
+          state.room = r;
+          renderTabLive();
+        }catch(e){ toast(e.message); }
+      };
+    });
+    app.querySelectorAll('[data-giggle]').forEach(btn=>{
+      btn.onclick = async ()=>{
+        btn.classList.add('pop');
+        setTimeout(()=>btn.classList.remove('pop'), 280);
+        try{
+          const r = await api('/api/rooms/'+state.room.code+'/giggle', {method:'POST', body:{name: state.profile.name, tier: btn.dataset.giggle}});
+          state.room = r;
+          renderTabLive();
+        }catch(e){ toast(e.message); }
+      };
+    });
+  }
+
+  if(state.view === 'leaderboard'){
+    document.getElementById('backBtn').onclick = ()=> go('home');
+    app.querySelectorAll('[data-lb]').forEach(btn=>{
+      btn.onclick = ()=>{
+        state.lbTab = btn.dataset.lb;
+        render();
+      };
+    });
+  }
+}
+
+boot();
+</script>
+</body>
+</html>
