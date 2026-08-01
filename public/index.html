@@ -223,6 +223,9 @@ button{ font-family:inherit; cursor:pointer; border:none; }
 const API = '';
 const state = { view:'landing', profile:null, room:null, error:null, pollTimer:null, lbTab:'nights', lbData:null, giggleTarget:null, myTabs:null, tabDetail:null, tabDetailFrom:'home', pendingJoin:null };
 
+const ESC_MAP = {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'};
+function esc(str){ return String(str == null ? '' : str).replace(/[&<>"']/g, c => ESC_MAP[c]); }
+
 function saveName(n){ localStorage.setItem('gpd_name', n); }
 function loadName(){ return localStorage.getItem('gpd_name') || ''; }
 function saveRoom(code){ localStorage.setItem('gpd_room', code || ''); }
@@ -360,7 +363,7 @@ function viewHome(){
     <div class="profile-chip">
       <div class="avatar">${p.avatar}</div>
       <div class="meta">
-        <div class="name">${p.name}</div>
+        <div class="name">${esc(p.name)}</div>
         <div class="stats mono">${Math.round(p.lifetime_points*10)/10} lifetime pts · ${p.nights_played} nights</div>
       </div>
       <button class="logout" id="logoutBtn">switch</button>
@@ -397,7 +400,7 @@ function viewJoin(){
 function isOwner(){ return state.room && state.profile && state.room.owner === state.profile.name; }
 
 function tierBtn(key,label,pts,cls,target){
-  return `<button class="tier-btn ${cls}" data-giggle="${key}" ${target ? `data-target="${target}"` : ''}><span>${label}</span><span class="pts">${pts} pt${pts===1?'':'s'}</span></button>`;
+  return `<button class="tier-btn ${cls}" data-giggle="${key}" ${target ? `data-target="${esc(target)}"` : ''}><span>${label}</span><span class="pts">${pts} pt${pts===1?'':'s'}</span></button>`;
 }
 
 function viewTab(){
@@ -421,7 +424,7 @@ function viewTab(){
           <div class="badge-ring"><div class="value mono" id="gpdVal">${r.gpd.toFixed(2)}</div></div>
           <div class="badge-label">Giggles<br/>per drink</div>
         </div>
-        <div class="sub">hosted by ${r.owner}</div>
+        <div class="sub">hosted by ${esc(r.owner)}</div>
       </div>
       <div class="dash"></div>
       <div class="stat-grid mono">
@@ -469,10 +472,10 @@ function renderRanking(r){
     const isMe = p.name === me;
     const open = state.giggleTarget === p.name;
     const row = `
-    <div class="rank-row ${isMe?'me':''}" ${!isMe ? `data-rate-target="${p.name}" style="cursor:pointer;"` : ''}>
+    <div class="rank-row ${isMe?'me':''}" ${!isMe ? `data-rate-target="${esc(p.name)}" style="cursor:pointer;"` : ''}>
       <span class="pos mono">${i+1}</span>
       <span class="av">${p.avatar}</span>
-      <span class="nm">${p.name}${isMe?' (you)':''}</span>
+      <span class="nm">${esc(p.name)}${isMe?' (you)':''}</span>
       <span class="pt mono">${p.points.toFixed(1)} pts</span>
     </div>`;
     const picker = open ? `
@@ -557,8 +560,8 @@ function renderLbList(){
       <div class="lb-row" data-open-tab="${n.room_code}" style="cursor:pointer;">
         <span class="rank mono">${i+1}</span>
         <div class="info">
-          <div class="t1">${n.owner}'s tab</div>
-          <div class="t2">${new Date(n.date).toLocaleDateString()} · MVP ${n.mvp || '—'}</div>
+          <div class="t1">${esc(n.owner)}'s tab</div>
+          <div class="t2">${new Date(n.date).toLocaleDateString()} · MVP ${n.mvp ? esc(n.mvp) : '—'}</div>
         </div>
         <div class="val">${n.gpd.toFixed(2)}<small>GPD</small></div>
       </div>`).join('');
@@ -568,7 +571,7 @@ function renderLbList(){
       <div class="lb-row">
         <span class="rank mono">${i+1}</span>
         <div class="info">
-          <div class="t1">${f.avatar} ${f.name}</div>
+          <div class="t1">${f.avatar} ${esc(f.name)}</div>
           <div class="t2">${f.nights_played} nights · best ${f.best_night.toFixed(1)} pts</div>
         </div>
         <div class="val">${f.lifetime_points.toFixed(1)}<small>pts</small></div>
@@ -612,7 +615,7 @@ function renderMyTabsList(){
       <span class="rank mono">${n.owner === me ? '👑' : '🍸'}</span>
       <div class="info">
         <div class="t1">Tab #${n.room_code}${n.owner===me?' · you hosted':''}</div>
-        <div class="t2">${new Date(n.date).toLocaleDateString()} · MVP ${n.mvp || '—'}${n.my_points!=null?` · you scored ${n.my_points.toFixed(1)} pts`:''}</div>
+        <div class="t2">${new Date(n.date).toLocaleDateString()} · MVP ${n.mvp ? esc(n.mvp) : '—'}${n.my_points!=null?` · you scored ${n.my_points.toFixed(1)} pts`:''}</div>
       </div>
       <div class="val">${n.gpd.toFixed(2)}<small>GPD</small></div>
     </div>`).join('');
@@ -655,7 +658,7 @@ function viewTabDetail(){
           <div class="badge-ring"><div class="value mono">${r.gpd.toFixed(2)}</div></div>
           <div class="badge-label">Giggles<br/>per drink</div>
         </div>
-        <div class="sub">hosted by ${r.owner}</div>
+        <div class="sub">hosted by ${esc(r.owner)}</div>
       </div>
       <div class="dash"></div>
       <div class="stat-grid mono">
@@ -671,7 +674,7 @@ function viewTabDetail(){
       <div class="rank-row ${state.profile && p.name===state.profile.name ? 'me':''}">
         <span class="pos mono">${i+1}</span>
         <span class="av">${p.avatar}</span>
-        <span class="nm">${p.name}</span>
+        <span class="nm">${esc(p.name)}</span>
         <span class="pt mono">${p.points.toFixed(1)} pts</span>
       </div>`).join('') : `<div class="empty">No one joined this tab.</div>`}</div>
   </div>`;
