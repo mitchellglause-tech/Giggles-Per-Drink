@@ -6,6 +6,7 @@
 <title>Giggles Per Drink</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;700&family=Bitter:wght@400;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.js"></script>
 <style>
 :root{
   --denim:#16233a;
@@ -47,6 +48,10 @@ body{
 .goose-lg{ width:78px; height:78px; }
 .goose-sm{ width:50px; height:50px; }
 .stamp{ position:absolute; top:52px; right:16px; width:46px; height:46px; transform:rotate(-9deg); opacity:0.85; }
+.qr-wrap{ background:var(--cream); border-radius:10px; padding:14px; width:150px; height:150px; margin:0 auto; }
+.qr-wrap svg{ display:block; }
+.qr-caption{ text-align:center; font-size:12px; opacity:0.65; margin-top:8px; }
+.qr-caption b{ color:var(--turquoise); }
 
 /* --- cards / buttons --- */
 .stack{ display:flex; flex-direction:column; gap:12px; }
@@ -216,7 +221,7 @@ button{ font-family:inherit; cursor:pointer; border:none; }
 
 <script>
 const API = '';
-const state = { view:'landing', profile:null, room:null, error:null, pollTimer:null, lbTab:'nights', lbData:null, giggleTarget:null, myTabs:null, tabDetail:null, tabDetailFrom:'home' };
+const state = { view:'landing', profile:null, room:null, error:null, pollTimer:null, lbTab:'nights', lbData:null, giggleTarget:null, myTabs:null, tabDetail:null, tabDetailFrom:'home', pendingJoin:null };
 
 function saveName(n){ localStorage.setItem('gpd_name', n); }
 function loadName(){ return localStorage.getItem('gpd_name') || ''; }
@@ -252,10 +257,31 @@ function go(view){
 
 // ---------- boot ----------
 async function boot(){
+  const params = new URLSearchParams(location.search);
+  const joinCode = params.get('join');
+  if(joinCode){
+    state.pendingJoin = joinCode.trim().toUpperCase();
+    history.replaceState({}, '', location.pathname);
+  }
+
   const name = loadName();
   if(name){
     try{
       state.profile = await api('/api/profile', {method:'POST', body:{name}});
+
+      if(state.pendingJoin){
+        const code = state.pendingJoin;
+        state.pendingJoin = null;
+        try{
+          const r = await api('/api/rooms/'+code+'/join', {method:'POST', body:{name}});
+          state.room = r;
+          saveRoom(r.code);
+          go('tab');
+          startPolling();
+          return;
+        }catch(e){ toast(e.message); }
+      }
+
       const room = loadRoom();
       if(room){
         try{
@@ -417,7 +443,23 @@ function viewTab(){
 
     <div class="section-label">In this tab — tap a friend to rate their giggle</div>
     <div class="ranking" id="ranking">${renderRanking(r)}</div>
+
+    <div class="section-label">Scan to join</div>
+    <div class="qr-wrap" id="qrWrap"></div>
+    <div class="qr-caption mono">or enter code <b>${r.code}</b></div>
   </div>`;
+}
+
+function renderJoinQR(code){
+  const wrap = document.getElementById('qrWrap');
+  if(!wrap || typeof qrcode === 'undefined') return;
+  const url = location.origin + location.pathname + '?join=' + code;
+  const qr = qrcode(0, 'M');
+  qr.addData(url);
+  qr.make();
+  wrap.innerHTML = qr.createSvgTag({ scalable: true });
+  const svg = wrap.querySelector('svg');
+  if(svg){ svg.removeAttribute('width'); svg.removeAttribute('height'); svg.style.width = '100%'; svg.style.height = '100%'; }
 }
 
 function renderRanking(r){
@@ -665,6 +707,18 @@ function bindEvents(){
       try{
         state.profile = await api('/api/profile', {method:'POST', body:{name:val}});
         saveName(val);
+        if(state.pendingJoin){
+          const code = state.pendingJoin;
+          state.pendingJoin = null;
+          try{
+            const r = await api('/api/rooms/'+code+'/join', {method:'POST', body:{name:val}});
+            state.room = r;
+            saveRoom(r.code);
+            go('tab');
+            startPolling();
+            return;
+          }catch(e){ toast(e.message); }
+        }
         go('home');
       }catch(e){ state.error = e.message; render(); }
     };
@@ -742,6 +796,7 @@ function bindEvents(){
       };
     });
     bindRankingEvents();
+    renderJoinQR(state.room.code);
   }
 
   if(state.view === 'leaderboard'){
