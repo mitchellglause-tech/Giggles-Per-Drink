@@ -218,7 +218,7 @@ app.post('/api/rooms/:code/giggle', (req, res) => {
   if (!room) return res.status(404).json({ error: 'Room not found' });
   if (room.status !== 'active') return res.status(400).json({ error: 'This tab has been closed out' });
 
-  const tiers = { chuckle: 0.5, giggle: 1.0, cackle: 2.0, wheeze: 3.0, legendary: 5.0 };
+  const tiers = { chuckle: 0.5, giggle: 1.0, cackle: 2.0, honkd: 3.0, legendary: 5.0 };
   const points = tiers[req.body.tier];
   if (points === undefined) return res.status(400).json({ error: 'Unknown giggle tier' });
 
