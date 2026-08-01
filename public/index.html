@@ -175,7 +175,7 @@ button{ font-family:inherit; cursor:pointer; border:none; }
 
 <script>
 const API = '';
-const state = { view:'landing', profile:null, room:null, error:null, pollTimer:null, lbTab:'nights', lbData:null };
+const state = { view:'landing', profile:null, room:null, error:null, pollTimer:null, lbTab:'nights', lbData:null, giggleTarget:null, myTabs:null, tabDetail:null, tabDetailFrom:'home' };
 
 function saveName(n){ localStorage.setItem('gpd_name', n); }
 function loadName(){ return localStorage.getItem('gpd_name') || ''; }
@@ -263,6 +263,8 @@ function render(){
   else if(state.view === 'join') app.innerHTML = viewJoin();
   else if(state.view === 'tab') app.innerHTML = viewTab();
   else if(state.view === 'leaderboard') app.innerHTML = viewLeaderboard();
+  else if(state.view === 'myTabs') app.innerHTML = viewMyTabs();
+  else if(state.view === 'tabDetail') app.innerHTML = viewTabDetail();
   bindEvents();
 }
 
@@ -298,6 +300,7 @@ function viewHome(){
     <div class="stack">
       <button class="btn primary" id="startBtn">Start a tab <span class="arrow">→</span></button>
       <button class="btn cyan" id="joinBtn">Join a tab <span class="arrow">→</span></button>
+      <button class="btn ghost" id="myTabsBtn">My past tabs <span class="arrow">→</span></button>
       <button class="btn ghost" id="lbBtn">Leaderboard <span class="arrow">→</span></button>
     </div>
     ${state.error ? `<div class="error" style="margin-top:12px;">${state.error}</div>` : ''}
@@ -325,8 +328,8 @@ function viewJoin(){
 // ---------- ACTIVE TAB ----------
 function isOwner(){ return state.room && state.profile && state.room.owner === state.profile.name; }
 
-function tierBtn(key,label,pts,cls){
-  return `<button class="tier-btn ${cls}" data-giggle="${key}"><span>${label}</span><span class="pts">${pts} pt${pts===1?'':'s'}</span></button>`;
+function tierBtn(key,label,pts,cls,target){
+  return `<button class="tier-btn ${cls}" data-giggle="${key}" ${target ? `data-target="${target}"` : ''}><span>${label}</span><span class="pts">${pts} pt${pts===1?'':'s'}</span></button>`;
 }
 
 function viewTab(){
@@ -360,39 +363,71 @@ function viewTab(){
       <div class="receipt-footer">thanks for coming out ♥ keep it classy</div>
     </div>
 
-    ${owner ? `
-    <div class="section-label">Log a drink</div>
+    <div class="section-label">Log your own drink</div>
     <div class="grid2">
       <button class="drink-btn" data-drink="beer">🍺 Beer<span class="units">1.0 unit</span></button>
       <button class="drink-btn" data-drink="wine">🍷 Wine<span class="units">1.0 unit</span></button>
       <button class="drink-btn" data-drink="cocktail">🍹 Cocktail<span class="units">1.5 units</span></button>
       <button class="drink-btn" data-drink="shot">🥃 Shot<span class="units">1.0 unit</span></button>
     </div>
-    ` : `
-    <div class="section-label">Log a giggle</div>
-    <div class="grid2">
-      ${tierBtn('chuckle','😤 Chuckle','0.5','chuckle')}
-      ${tierBtn('giggle','😄 Giggle','1','giggle')}
-      ${tierBtn('cackle','😆 Cackle','2','cackle')}
-      ${tierBtn('wheeze','🤣 Wheeze','3','wheeze')}
-      ${tierBtn('legendary','🏆 Legendary','5','legendary')}
-    </div>
-    `}
 
-    <div class="section-label">In this tab</div>
+    <div class="section-label">In this tab — tap a friend to rate their giggle</div>
     <div class="ranking" id="ranking">${renderRanking(r)}</div>
   </div>`;
 }
 
 function renderRanking(r){
   if(!r.participants.length) return `<div class="empty">No friends have joined yet — share code <b>${r.code}</b></div>`;
-  return r.participants.map((p,i)=>`
-    <div class="rank-row ${state.profile && p.name===state.profile.name ? 'me':''}">
+  const me = state.profile && state.profile.name;
+  return r.participants.map((p,i)=>{
+    const isMe = p.name === me;
+    const open = state.giggleTarget === p.name;
+    const row = `
+    <div class="rank-row ${isMe?'me':''}" ${!isMe ? `data-rate-target="${p.name}" style="cursor:pointer;"` : ''}>
       <span class="pos mono">${i+1}</span>
       <span class="av">${p.avatar}</span>
-      <span class="nm">${p.name}</span>
+      <span class="nm">${p.name}${isMe?' (you)':''}</span>
       <span class="pt mono">${p.points.toFixed(1)} pts</span>
-    </div>`).join('');
+    </div>`;
+    const picker = open ? `
+    <div class="grid2 giggle-picker">
+      ${tierBtn('chuckle','😤 Chuckle','0.5','chuckle',p.name)}
+      ${tierBtn('giggle','😄 Giggle','1','giggle',p.name)}
+      ${tierBtn('cackle','😆 Cackle','2','cackle',p.name)}
+      ${tierBtn('wheeze','🤣 Wheeze','3','wheeze',p.name)}
+      ${tierBtn('legendary','🏆 Legendary','5','legendary',p.name)}
+    </div>` : '';
+    return row + picker;
+  }).join('');
+}
+
+function bindRankingEvents(){
+  const ranking = document.getElementById('ranking');
+  if(!ranking) return;
+  ranking.querySelectorAll('[data-rate-target]').forEach(row=>{
+    row.onclick = ()=>{
+      const name = row.dataset.rateTarget;
+      state.giggleTarget = state.giggleTarget === name ? null : name;
+      ranking.innerHTML = renderRanking(state.room);
+      bindRankingEvents();
+    };
+  });
+  ranking.querySelectorAll('[data-giggle]').forEach(btn=>{
+    btn.onclick = async (e)=>{
+      e.stopPropagation();
+      btn.classList.add('pop');
+      setTimeout(()=>btn.classList.remove('pop'), 280);
+      const target = btn.dataset.target;
+      try{
+        const r = await api('/api/rooms/'+state.room.code+'/giggle', {method:'POST', body:{name: state.profile.name, tier: btn.dataset.giggle, target}});
+        state.room = r;
+        state.giggleTarget = null;
+        ranking.innerHTML = renderRanking(state.room);
+        bindRankingEvents();
+        toast('🎉 rated ' + target);
+      }catch(e){ toast(e.message); }
+    };
+  });
 }
 
 function renderTabLive(){
@@ -406,6 +441,7 @@ function renderTabLive(){
   document.getElementById('statShots').textContent = r.shots;
   document.getElementById('statPerHour').textContent = r.giggles_per_hour;
   document.getElementById('ranking').innerHTML = renderRanking(r);
+  bindRankingEvents();
 }
 
 // ---------- LEADERBOARD ----------
@@ -432,7 +468,7 @@ function renderLbList(){
   if(state.lbTab === 'nights'){
     if(!data.nights.length) return `<div class="empty">No nights closed out yet. Be the first!</div>`;
     return data.nights.map((n,i)=>`
-      <div class="lb-row">
+      <div class="lb-row" data-open-tab="${n.room_code}" style="cursor:pointer;">
         <span class="rank mono">${i+1}</span>
         <div class="info">
           <div class="t1">${n.owner}'s tab</div>
@@ -462,7 +498,113 @@ async function loadLeaderboard(){
     ]);
     state.lbData = {nights, friends};
     document.getElementById('lbList').innerHTML = renderLbList();
+    bindOpenTabHandlers();
   }catch(e){ /* ignore */ }
+}
+
+// ---------- MY TABS ----------
+function viewMyTabs(){
+  return `
+  <div>
+    <div class="topbar">
+      <button class="back" id="backBtn">← back</button>
+    </div>
+    <div class="brand" style="margin-bottom:18px;">
+      <h1 class="neon" style="font-size:26px;">My Tabs</h1>
+    </div>
+    <div id="myTabsList">${renderMyTabsList()}</div>
+  </div>`;
+}
+
+function renderMyTabsList(){
+  const rows = state.myTabs;
+  if(!rows) return `<div class="empty">Loading…</div>`;
+  if(!rows.length) return `<div class="empty">No tabs closed out yet. Start one and close it out to see it here.</div>`;
+  const me = state.profile && state.profile.name;
+  return rows.map(n=>`
+    <div class="lb-row" data-open-tab="${n.room_code}" style="cursor:pointer;">
+      <span class="rank mono">${n.owner === me ? '👑' : '🍸'}</span>
+      <div class="info">
+        <div class="t1">Tab #${n.room_code}${n.owner===me?' · you hosted':''}</div>
+        <div class="t2">${new Date(n.date).toLocaleDateString()} · MVP ${n.mvp || '—'}${n.my_points!=null?` · you scored ${n.my_points.toFixed(1)} pts`:''}</div>
+      </div>
+      <div class="val">${n.gpd.toFixed(2)}<small>GPD</small></div>
+    </div>`).join('');
+}
+
+async function loadMyTabs(){
+  try{
+    const rows = await api('/api/profile/'+encodeURIComponent(state.profile.name)+'/tabs');
+    state.myTabs = rows;
+    const el = document.getElementById('myTabsList');
+    if(el) el.innerHTML = renderMyTabsList();
+    bindOpenTabHandlers();
+  }catch(e){ /* ignore */ }
+}
+
+// ---------- TAB DETAIL (read-only) ----------
+function viewTabDetail(){
+  const r = state.tabDetail;
+  if(!r){
+    return `
+    <div>
+      <div class="topbar"><button class="back" id="backBtn">← back</button></div>
+      <div class="empty">Loading…</div>
+    </div>`;
+  }
+  return `
+  <div>
+    <div class="topbar">
+      <button class="back" id="backBtn">← back</button>
+    </div>
+    <div class="receipt">
+      <div class="code-row">
+        <span class="code-label">Tab #${r.code}</span>
+        <span class="code-value">${r.status === 'active' ? '🟢 live' : '✅ closed'}</span>
+      </div>
+      <div class="dash"></div>
+      <div class="gpd-hero">
+        <div class="label">Giggles Per Drink</div>
+        <div class="value mono">${r.gpd.toFixed(2)}</div>
+        <div class="sub">hosted by ${r.owner}</div>
+      </div>
+      <div class="dash"></div>
+      <div class="stat-grid mono">
+        <div class="stat"><span class="k">Giggle Score</span><span class="v">${r.giggle_score.toFixed(1)}</span></div>
+        <div class="stat"><span class="k">Drink Units</span><span class="v">${r.drink_units.toFixed(1)}</span></div>
+        <div class="stat"><span class="k">Shots Taken</span><span class="v">${r.shots}</span></div>
+        <div class="stat"><span class="k">Giggles / Hr</span><span class="v">${r.giggles_per_hour}</span></div>
+      </div>
+      <div class="receipt-footer">${new Date(r.created_at).toLocaleDateString()} · thanks for coming out ♥</div>
+    </div>
+    <div class="section-label">Final standings</div>
+    <div class="ranking">${r.participants.length ? r.participants.map((p,i)=>`
+      <div class="rank-row ${state.profile && p.name===state.profile.name ? 'me':''}">
+        <span class="pos mono">${i+1}</span>
+        <span class="av">${p.avatar}</span>
+        <span class="nm">${p.name}</span>
+        <span class="pt mono">${p.points.toFixed(1)} pts</span>
+      </div>`).join('') : `<div class="empty">No one joined this tab.</div>`}</div>
+  </div>`;
+}
+
+function bindOpenTabHandlers(){
+  document.querySelectorAll('[data-open-tab]').forEach(row=>{
+    row.onclick = ()=> openTabDetail(row.dataset.openTab, state.view);
+  });
+}
+
+async function openTabDetail(code, from){
+  state.tabDetailFrom = from;
+  state.tabDetail = null;
+  go('tabDetail');
+  try{
+    state.tabDetail = await api('/api/rooms/' + code);
+    if(state.view === 'tabDetail') render();
+  }catch(e){
+    toast(e.message);
+    go(from);
+  }
 }
 
 // ---------- events ----------
@@ -493,6 +635,7 @@ function bindEvents(){
       }catch(e){ state.error = e.message; render(); }
     };
     document.getElementById('joinBtn').onclick = ()=> go('join');
+    document.getElementById('myTabsBtn').onclick = ()=>{ state.myTabs = null; go('myTabs'); loadMyTabs(); };
     document.getElementById('lbBtn').onclick = ()=>{ go('leaderboard'); loadLeaderboard(); };
     document.getElementById('logoutBtn').onclick = ()=>{
       localStorage.removeItem('gpd_name');
@@ -521,6 +664,7 @@ function bindEvents(){
     document.getElementById('leaveBtn').onclick = ()=>{
       stopPoll();
       saveRoom('');
+      state.giggleTarget = null;
       go('home');
     };
     const closeBtn = document.getElementById('closeBtn');
@@ -531,6 +675,7 @@ function bindEvents(){
           const r = await api('/api/rooms/'+state.room.code+'/close', {method:'POST', body:{name: state.profile.name}});
           stopPoll();
           saveRoom('');
+          state.giggleTarget = null;
           toast('Tab closed — GPD ' + r.gpd.toFixed(2));
           // refresh profile stats
           state.profile = await api('/api/profile', {method:'POST', body:{name: state.profile.name}});
@@ -549,17 +694,7 @@ function bindEvents(){
         }catch(e){ toast(e.message); }
       };
     });
-    app.querySelectorAll('[data-giggle]').forEach(btn=>{
-      btn.onclick = async ()=>{
-        btn.classList.add('pop');
-        setTimeout(()=>btn.classList.remove('pop'), 280);
-        try{
-          const r = await api('/api/rooms/'+state.room.code+'/giggle', {method:'POST', body:{name: state.profile.name, tier: btn.dataset.giggle}});
-          state.room = r;
-          renderTabLive();
-        }catch(e){ toast(e.message); }
-      };
-    });
+    bindRankingEvents();
   }
 
   if(state.view === 'leaderboard'){
@@ -570,6 +705,16 @@ function bindEvents(){
         render();
       };
     });
+    bindOpenTabHandlers();
+  }
+
+  if(state.view === 'myTabs'){
+    document.getElementById('backBtn').onclick = ()=> go('home');
+    bindOpenTabHandlers();
+  }
+
+  if(state.view === 'tabDetail'){
+    document.getElementById('backBtn').onclick = ()=> go(state.tabDetailFrom);
   }
 }
 
