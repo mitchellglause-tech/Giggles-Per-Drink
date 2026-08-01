@@ -5,40 +5,36 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
 <title>Giggles Per Drink</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Monoton&family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;700&family=Bitter:wght@400;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
 :root{
-  --ink:#14101c;
-  --ink-2:#1c1626;
-  --pink:#ff3d8f;
-  --cyan:#4de8d4;
-  --amber:#ffb627;
-  --paper:#f5efe3;
-  --paper-line: rgba(20,16,28,0.14);
+  --denim:#16233a;
+  --denim-2:#0e1826;
+  --cream:#f4e9d8;
+  --turquoise:#2ea8a0;
+  --orange:#d9622b;
+  --gold:#c9a13b;
+  --silver:#9fb0c2;
 }
 *{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
 html,body{margin:0;height:100%;}
 body{
   background:
-    radial-gradient(circle at 15% 0%, rgba(255,61,143,0.16), transparent 45%),
-    radial-gradient(circle at 85% 15%, rgba(77,232,212,0.14), transparent 45%),
-    var(--ink);
-  color:var(--paper);
-  font-family:'Space Grotesk', system-ui, sans-serif;
+    radial-gradient(circle at 50% -10%, rgba(46,168,160,0.10), transparent 55%),
+    var(--denim);
+  color:var(--cream);
+  font-family:'Bitter', Georgia, serif;
   min-height:100vh;
   padding-bottom: env(safe-area-inset-bottom);
 }
 .mono{ font-family:'JetBrains Mono', monospace; }
-.neon{
-  font-family:'Monoton', cursive;
-  letter-spacing:1px;
-  line-height:1.1;
-  color:var(--paper);
-  text-shadow:
-    0 0 4px var(--pink),
-    0 0 14px var(--pink),
-    0 0 28px rgba(255,61,143,0.6),
-    0 0 2px var(--cyan);
+.title-block{
+  font-family:'Oswald', sans-serif;
+  text-transform:uppercase;
+  letter-spacing:0.03em;
+  line-height:1.15;
+  font-weight:700;
+  color:var(--turquoise);
 }
 .wrap{ max-width:480px; margin:0 auto; padding:28px 18px 40px; min-height:100vh; display:flex; flex-direction:column;}
 .center-flex{ flex:1; display:flex; flex-direction:column; justify-content:center; }
@@ -46,49 +42,53 @@ body{
 /* --- top brand --- */
 .brand{ text-align:center; margin-bottom:22px; }
 .brand h1{ font-size:clamp(28px, 8vw, 40px); margin:0 0 4px; }
-.brand p{ margin:0; opacity:0.6; font-size:13px; letter-spacing:0.14em; text-transform:uppercase; color:var(--cyan); }
+.brand p{ margin:0; opacity:0.75; font-size:13px; letter-spacing:0.14em; text-transform:uppercase; color:var(--silver); font-family:'Oswald',sans-serif; }
+.mascot-perch{ display:flex; justify-content:center; margin-bottom:6px; }
+.goose-lg{ width:78px; height:78px; }
+.goose-sm{ width:50px; height:50px; }
+.stamp{ position:absolute; top:52px; right:16px; width:46px; height:46px; transform:rotate(-9deg); opacity:0.85; }
 
 /* --- cards / buttons --- */
 .stack{ display:flex; flex-direction:column; gap:12px; }
 input[type=text]{
-  width:100%; padding:16px 14px; border-radius:10px; border:1px solid rgba(245,239,227,0.18);
-  background:var(--ink-2); color:var(--paper); font-family:inherit; font-size:17px;
+  width:100%; padding:16px 14px; border-radius:8px; border:1px solid rgba(244,233,216,0.2);
+  background:var(--denim-2); color:var(--cream); font-family:inherit; font-size:17px;
   outline:none;
 }
-input[type=text]:focus{ border-color:var(--cyan); box-shadow:0 0 0 3px rgba(77,232,212,0.15); }
-input[type=text]::placeholder{ color:rgba(245,239,227,0.35); }
+input[type=text]:focus{ border-color:var(--turquoise); box-shadow:0 0 0 3px rgba(46,168,160,0.18); }
+input[type=text]::placeholder{ color:rgba(244,233,216,0.35); }
 
 button{ font-family:inherit; cursor:pointer; border:none; }
 .btn{
-  padding:17px 16px; border-radius:10px; font-size:16px; font-weight:600;
-  background:var(--ink-2); color:var(--paper); border:1px solid rgba(245,239,227,0.14);
+  padding:17px 16px; border-radius:8px; font-size:16px; font-weight:600;
+  background:var(--denim-2); color:var(--cream); border:1px solid rgba(244,233,216,0.14);
   display:flex; align-items:center; justify-content:space-between; gap:10px;
   transition:transform .08s ease, border-color .15s ease;
 }
 .btn:active{ transform:scale(0.98); }
-.btn .arrow{ opacity:0.5; }
-.btn.primary{ background:var(--pink); color:var(--ink); border-color:var(--pink); font-weight:700;}
-.btn.cyan{ background:var(--cyan); color:var(--ink); border-color:var(--cyan); font-weight:700;}
-.btn.ghost{ background:transparent; border:1px solid rgba(245,239,227,0.22); }
+.btn .arrow{ opacity:0.6; }
+.btn.primary{ background:var(--turquoise); color:var(--denim-2); border-color:var(--turquoise); font-weight:700;}
+.btn.cyan{ background:var(--orange); color:var(--denim-2); border-color:var(--orange); font-weight:700;}
+.btn.ghost{ background:transparent; border:1px solid rgba(244,233,216,0.25); }
 .btn.small{ padding:11px 14px; font-size:14px; }
 .btn:disabled{ opacity:0.4; }
 
 .profile-chip{
-  display:flex; align-items:center; gap:12px; background:var(--ink-2); border:1px solid rgba(245,239,227,0.1);
-  border-radius:14px; padding:14px 16px; margin-bottom:20px;
+  display:flex; align-items:center; gap:12px; background:var(--denim-2); border:1px solid rgba(244,233,216,0.1);
+  border-radius:12px; padding:14px 16px; margin-bottom:20px;
 }
 .profile-chip .avatar{ font-size:34px; line-height:1; }
 .profile-chip .meta{ flex:1; }
-.profile-chip .name{ font-weight:700; font-size:17px; }
-.profile-chip .stats{ font-size:12px; opacity:0.6; margin-top:2px;}
-.profile-chip .logout{ font-size:12px; opacity:0.5; text-decoration:underline; background:none; color:var(--paper);}
+.profile-chip .name{ font-weight:700; font-size:17px; font-family:'Oswald',sans-serif; letter-spacing:0.02em;}
+.profile-chip .stats{ font-size:12px; opacity:0.7; margin-top:2px;}
+.profile-chip .logout{ font-size:12px; opacity:0.6; text-decoration:underline; background:none; color:var(--cream);}
 
-.error{ background:rgba(255,61,143,0.12); border:1px solid var(--pink); color:#ffd0e4; padding:10px 12px; border-radius:8px; font-size:14px; }
+.error{ background:rgba(217,98,43,0.14); border:1px solid var(--orange); color:#ffd9bd; padding:10px 12px; border-radius:8px; font-size:14px; }
 
 /* --- receipt / bar tab --- */
 .receipt{
-  background:var(--paper);
-  color:var(--ink);
+  background:var(--cream);
+  color:var(--denim-2);
   border-radius:2px;
   position:relative;
   padding:22px 20px 20px;
@@ -98,71 +98,74 @@ button{ font-family:inherit; cursor:pointer; border:none; }
   content:"";
   position:absolute; left:0; right:0; height:9px;
   background:
-    linear-gradient(135deg, var(--paper) 50%, transparent 50%) 0 0/10px 10px repeat-x,
-    linear-gradient(-135deg, var(--paper) 50%, transparent 50%) 0 0/10px 10px repeat-x;
-  background-color:var(--ink);
+    linear-gradient(135deg, var(--cream) 50%, transparent 50%) 0 0/10px 10px repeat-x,
+    linear-gradient(-135deg, var(--cream) 50%, transparent 50%) 0 0/10px 10px repeat-x;
+  background-color:var(--denim);
 }
 .receipt::before{ top:-9px; transform:rotate(180deg); }
 .receipt::after{ bottom:-9px; }
 .receipt .code-row{ display:flex; justify-content:space-between; align-items:baseline; margin-bottom:10px;}
-.receipt .code-label{ font-size:11px; letter-spacing:0.12em; text-transform:uppercase; opacity:0.55;}
+.receipt .code-label{ font-size:11px; letter-spacing:0.12em; text-transform:uppercase; opacity:0.6; font-family:'Oswald',sans-serif;}
 .receipt .code-value{ font-family:'JetBrains Mono',monospace; font-weight:700; font-size:20px; letter-spacing:0.06em;}
-.dash{ border-top:2px dashed var(--paper-line); margin:12px 0; }
+.dash{ border-top:2px dashed rgba(14,24,38,0.16); margin:12px 0; }
 .gpd-hero{ text-align:center; padding:8px 0 14px; }
-.gpd-hero .label{ font-size:12px; letter-spacing:0.14em; text-transform:uppercase; opacity:0.55; margin-bottom:4px;}
-.gpd-hero .value{ font-family:'JetBrains Mono',monospace; font-size:56px; font-weight:700; line-height:1; }
-.gpd-hero .sub{ font-size:12px; opacity:0.55; margin-top:6px;}
+.badge-row{ display:flex; align-items:center; justify-content:center; gap:16px; margin:4px 0 10px; }
+.badge-ring{ width:126px; height:126px; border-radius:50%; border:3px double var(--orange); display:flex; align-items:center; justify-content:center; flex:none; background:rgba(217,98,43,0.06); }
+.badge-ring .value{ font-family:'JetBrains Mono',monospace; font-size:32px; font-weight:700; color:var(--denim-2); line-height:1;}
+.badge-label{ font-family:'Oswald',sans-serif; text-transform:uppercase; letter-spacing:0.06em; font-size:15px; font-weight:700; color:var(--denim-2); line-height:1.3; text-align:left; }
+.gpd-hero .sub{ font-size:12px; opacity:0.6; margin-top:2px;}
 .stat-grid{ display:grid; grid-template-columns:1fr 1fr; gap:10px 16px; margin:6px 0 4px;}
-.stat{ display:flex; justify-content:space-between; font-family:'JetBrains Mono',monospace; font-size:14px; border-bottom:1px dotted var(--paper-line); padding-bottom:6px;}
-.stat .k{ opacity:0.55; }
+.stat{ display:flex; justify-content:space-between; font-family:'JetBrains Mono',monospace; font-size:14px; border-bottom:1px dotted rgba(14,24,38,0.18); padding-bottom:6px;}
+.stat .k{ opacity:0.6; }
 .stat .v{ font-weight:700; }
-.receipt-footer{ text-align:center; font-size:11px; opacity:0.45; margin-top:14px; letter-spacing:0.08em;}
+.receipt-footer{ text-align:center; font-size:11px; opacity:0.5; margin-top:14px; letter-spacing:0.08em;}
 
 /* --- action grids in active tab --- */
-.section-label{ font-size:12px; letter-spacing:0.12em; text-transform:uppercase; color:var(--cyan); margin:22px 0 10px; }
+.section-label{ font-size:12px; letter-spacing:0.12em; text-transform:uppercase; color:var(--turquoise); margin:22px 0 10px; font-family:'Oswald',sans-serif; }
+.section-label::before{ content:"★ "; color:var(--orange); }
 .grid2{ display:grid; grid-template-columns:1fr 1fr; gap:10px; }
 .tier-btn{
-  padding:14px 10px; border-radius:12px; text-align:left; background:var(--ink-2);
-  border:1px solid rgba(245,239,227,0.1); color:var(--paper);
+  padding:14px 10px; border-radius:10px; text-align:left; background:var(--denim-2);
+  border:1px solid rgba(244,233,216,0.1); color:var(--cream);
 }
-.tier-btn .pts{ font-family:'JetBrains Mono',monospace; font-size:12px; opacity:0.6; display:block; margin-top:2px;}
-.tier-btn.chuckle{ border-left:4px solid #8ee6d8; }
-.tier-btn.giggle{ border-left:4px solid var(--cyan); }
-.tier-btn.cackle{ border-left:4px solid var(--amber); }
-.tier-btn.wheeze{ border-left:4px solid #ff8a4d; }
-.tier-btn.legendary{ border-left:4px solid var(--pink); grid-column:1 / -1; display:flex; align-items:center; justify-content:space-between;}
-.drink-btn{ padding:18px 10px; border-radius:12px; background:var(--ink-2); border:1px solid rgba(245,239,227,0.1); color:var(--paper); font-weight:600; text-align:center;}
-.drink-btn .units{ display:block; font-family:'JetBrains Mono',monospace; font-size:11px; opacity:0.55; margin-top:3px;}
+.tier-btn .pts{ font-family:'JetBrains Mono',monospace; font-size:12px; opacity:0.65; display:block; margin-top:2px;}
+.tier-btn.chuckle{ border-left:4px solid var(--silver); }
+.tier-btn.giggle{ border-left:4px solid var(--turquoise); }
+.tier-btn.cackle{ border-left:4px solid #e08a52; }
+.tier-btn.wheeze{ border-left:4px solid var(--orange); }
+.tier-btn.legendary{ border-left:4px solid var(--gold); grid-column:1 / -1; display:flex; align-items:center; justify-content:space-between;}
+.drink-btn{ padding:18px 10px; border-radius:10px; background:var(--denim-2); border:1px solid rgba(244,233,216,0.1); color:var(--cream); font-weight:600; text-align:center;}
+.drink-btn .units{ display:block; font-family:'JetBrains Mono',monospace; font-size:11px; opacity:0.6; margin-top:3px;}
 .pop{ animation:pop .28s ease; }
 @keyframes pop{ 0%{ transform:scale(1);} 40%{ transform:scale(1.04);} 100%{ transform:scale(1);} }
 
 .ranking{ display:flex; flex-direction:column; gap:8px; margin-top:6px;}
-.rank-row{ display:flex; align-items:center; gap:10px; background:var(--ink-2); border-radius:10px; padding:10px 12px; border:1px solid rgba(245,239,227,0.08);}
-.rank-row .pos{ font-family:'JetBrains Mono',monospace; opacity:0.5; width:18px;}
+.rank-row{ display:flex; align-items:center; gap:10px; background:var(--denim-2); border-radius:10px; padding:10px 12px; border:1px solid rgba(244,233,216,0.08);}
+.rank-row .pos{ font-family:'JetBrains Mono',monospace; opacity:0.55; width:18px;}
 .rank-row .av{ font-size:20px; }
 .rank-row .nm{ flex:1; font-weight:600; }
-.rank-row .pt{ font-family:'JetBrains Mono',monospace; color:var(--amber); font-weight:700;}
-.rank-row.me{ border-color:var(--cyan); }
+.rank-row .pt{ font-family:'JetBrains Mono',monospace; color:var(--gold); font-weight:700;}
+.rank-row.me{ border-color:var(--turquoise); }
 
 .tabs{ display:flex; gap:8px; margin-bottom:16px; }
-.tabs button{ flex:1; padding:10px; border-radius:10px; background:var(--ink-2); color:var(--paper); font-weight:600; opacity:0.55; border:1px solid transparent;}
-.tabs button.active{ opacity:1; border-color:var(--cyan); color:var(--cyan); }
+.tabs button{ flex:1; padding:10px; border-radius:8px; background:var(--denim-2); color:var(--cream); font-weight:600; opacity:0.6; border:1px solid transparent; font-family:'Oswald',sans-serif; letter-spacing:0.02em;}
+.tabs button.active{ opacity:1; border-color:var(--turquoise); color:var(--turquoise); }
 
-.lb-row{ display:flex; align-items:center; gap:12px; background:var(--ink-2); border-radius:12px; padding:12px 14px; margin-bottom:8px; border:1px solid rgba(245,239,227,0.08);}
-.lb-row .rank{ font-family:'JetBrains Mono',monospace; opacity:0.45; width:22px;}
+.lb-row{ display:flex; align-items:center; gap:12px; background:var(--denim-2); border-radius:10px; padding:12px 14px; margin-bottom:8px; border:1px solid rgba(244,233,216,0.08);}
+.lb-row .rank{ font-family:'JetBrains Mono',monospace; opacity:0.5; width:22px;}
 .lb-row .info{ flex:1; }
 .lb-row .info .t1{ font-weight:700; }
-.lb-row .info .t2{ font-size:12px; opacity:0.55; margin-top:2px;}
-.lb-row .val{ font-family:'JetBrains Mono',monospace; color:var(--amber); font-weight:700; text-align:right;}
-.lb-row .val small{ display:block; font-size:10px; opacity:0.55; color:var(--paper); font-weight:400;}
+.lb-row .info .t2{ font-size:12px; opacity:0.6; margin-top:2px;}
+.lb-row .val{ font-family:'JetBrains Mono',monospace; color:var(--gold); font-weight:700; text-align:right;}
+.lb-row .val small{ display:block; font-size:10px; opacity:0.6; color:var(--cream); font-weight:400;}
 
 .topbar{ display:flex; align-items:center; justify-content:space-between; margin-bottom:18px;}
-.back{ background:none; color:var(--paper); opacity:0.6; font-size:14px; display:flex; gap:6px; align-items:center;}
+.back{ background:none; color:var(--cream); opacity:0.7; font-size:14px; display:flex; gap:6px; align-items:center;}
 .hidden{ display:none !important; }
-.empty{ text-align:center; opacity:0.5; padding:30px 10px; font-size:14px;}
+.empty{ text-align:center; opacity:0.55; padding:30px 10px; font-size:14px;}
 .toast{
   position:fixed; left:50%; bottom:24px; transform:translateX(-50%);
-  background:var(--amber); color:var(--ink); font-weight:700; padding:10px 16px; border-radius:10px;
+  background:var(--orange); color:var(--cream); font-weight:700; padding:10px 16px; border-radius:8px;
   font-size:14px; box-shadow:0 10px 30px rgba(0,0,0,0.4); opacity:0; pointer-events:none; transition:opacity .2s ease, bottom .2s ease;
   z-index:50;
 }
@@ -170,6 +173,44 @@ button{ font-family:inherit; cursor:pointer; border:none; }
 </style>
 </head>
 <body>
+<svg style="position:absolute;width:0;height:0;overflow:hidden" aria-hidden="true">
+  <defs>
+    <symbol id="goose-full" viewBox="0 0 200 200">
+      <path d="M100 108 Q94 58 152 53" fill="none" stroke="#16233a" stroke-width="34" stroke-linecap="round"/>
+      <path d="M100 108 Q94 58 152 53" fill="none" stroke="#f4e9d8" stroke-width="27" stroke-linecap="round"/>
+      <ellipse cx="93" cy="132" rx="56" ry="46" fill="#f4e9d8" stroke="#16233a" stroke-width="4"/>
+      <path d="M60 115 Q78 100 96 118 Q84 138 62 132 Z" fill="#f4e9d8" stroke="#16233a" stroke-width="3"/>
+      <path d="M66 116 Q78 112 88 122" fill="none" stroke="#16233a" stroke-width="1.5" opacity="0.5"/>
+      <path d="M84 100 L124 100 L104 132 Z" fill="#2ea8a0" stroke="#16233a" stroke-width="3"/>
+      <circle cx="104" cy="99" r="7" fill="#2ea8a0" stroke="#16233a" stroke-width="3"/>
+      <circle cx="104" cy="113" r="3" fill="#c9a13b"/>
+      <path d="M83 168 L80 197" stroke="#d9622b" stroke-width="6" stroke-linecap="round"/>
+      <path d="M80 197 L70 201 M80 197 L82 203 M80 197 L91 200" stroke="#d9622b" stroke-width="5" stroke-linecap="round"/>
+      <path d="M108 164 L133 178 L150 172" fill="none" stroke="#d9622b" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M150 172 L143 179 M150 172 L152 165 M150 172 L159 174" stroke="#d9622b" stroke-width="5" stroke-linecap="round"/>
+      <circle cx="153" cy="53" r="23" fill="#f4e9d8" stroke="#16233a" stroke-width="4"/>
+      <path d="M173 49 L202 44 L179 60 Z" fill="#d9622b" stroke="#16233a" stroke-width="3" stroke-linejoin="round"/>
+      <path d="M173 61 L198 68 L177 70 Z" fill="#c9622b" stroke="#16233a" stroke-width="3" stroke-linejoin="round"/>
+      <circle cx="148" cy="42" r="7" fill="#fff" stroke="#16233a" stroke-width="2.5"/>
+      <circle cx="152" cy="40" r="3" fill="#16233a"/>
+      <circle cx="166" cy="41" r="7" fill="#fff" stroke="#16233a" stroke-width="2.5"/>
+      <circle cx="161" cy="43" r="3" fill="#16233a"/>
+      <path d="M206 40 L214 36 M209 46 L218 45 M206 52 L213 55" stroke="#c9a13b" stroke-width="3" stroke-linecap="round"/>
+    </symbol>
+    <symbol id="goose-stamp" viewBox="0 0 200 200">
+      <circle cx="100" cy="100" r="94" fill="none" stroke="#16233a" stroke-width="4"/>
+      <path d="M100 118 Q94 68 152 63" fill="none" stroke="#16233a" stroke-width="7" stroke-linecap="round"/>
+      <ellipse cx="93" cy="140" rx="52" ry="42" fill="none" stroke="#16233a" stroke-width="4"/>
+      <path d="M84 110 L124 110 L104 140 Z" fill="none" stroke="#16233a" stroke-width="3.5"/>
+      <circle cx="153" cy="63" r="21" fill="none" stroke="#16233a" stroke-width="4"/>
+      <path d="M173 59 L200 54 L178 69 Z" fill="none" stroke="#16233a" stroke-width="3.5"/>
+      <circle cx="148" cy="53" r="3" fill="#16233a"/>
+      <circle cx="164" cy="52" r="3" fill="#16233a"/>
+      <path d="M40 165 A80 80 0 0 1 160 165" fill="none" stroke="#16233a" stroke-width="2"/>
+      <text x="100" y="182" text-anchor="middle" font-family="Georgia,serif" font-size="13" letter-spacing="2" fill="#16233a">CERTIFIED SILLY</text>
+    </symbol>
+  </defs>
+</svg>
 <div class="wrap" id="app"></div>
 <div class="toast" id="toast"></div>
 
@@ -273,7 +314,8 @@ function viewLanding(){
   return `
   <div class="center-flex">
     <div class="brand">
-      <h1 class="neon">Giggles<br/>Per Drink</h1>
+      <div class="mascot-perch"><svg class="goose-lg"><use href="#goose-full"/></svg></div>
+      <h1 class="title-block">Giggles<br/>Per Drink</h1>
       <p>tonight's tab, tallied live</p>
     </div>
     <div class="stack">
@@ -315,7 +357,7 @@ function viewJoin(){
       <button class="back" id="backBtn">← back</button>
     </div>
     <div class="brand" style="margin-bottom:26px;">
-      <h1 class="neon" style="font-size:26px;">Join a Tab</h1>
+      <h1 class="title-block" style="font-size:26px;">Join a Tab</h1>
     </div>
     <div class="stack">
       <input type="text" id="codeInput" placeholder="Room code (e.g. 7XQK)" maxlength="4" autocomplete="off" style="text-transform:uppercase; letter-spacing:0.1em; text-align:center; font-family:'JetBrains Mono',monospace; font-size:22px;" />
@@ -349,8 +391,10 @@ function viewTab(){
       </div>
       <div class="dash"></div>
       <div class="gpd-hero">
-        <div class="label">Giggles Per Drink</div>
-        <div class="value mono" id="gpdVal">${r.gpd.toFixed(2)}</div>
+        <div class="badge-row">
+          <div class="badge-ring"><div class="value mono" id="gpdVal">${r.gpd.toFixed(2)}</div></div>
+          <div class="badge-label">Giggles<br/>per drink</div>
+        </div>
         <div class="sub">hosted by ${r.owner}</div>
       </div>
       <div class="dash"></div>
@@ -377,7 +421,7 @@ function viewTab(){
 }
 
 function renderRanking(r){
-  if(!r.participants.length) return `<div class="empty">No friends have joined yet — share code <b>${r.code}</b></div>`;
+  if(r.participants.length <= 1) return `<div class="empty"><div class="mascot-perch"><svg class="goose-sm"><use href="#goose-full"/></svg></div>No friends have joined yet — share code <b>${r.code}</b></div>`;
   const me = state.profile && state.profile.name;
   return r.participants.map((p,i)=>{
     const isMe = p.name === me;
@@ -452,7 +496,7 @@ function viewLeaderboard(){
       <button class="back" id="backBtn">← back</button>
     </div>
     <div class="brand" style="margin-bottom:18px;">
-      <h1 class="neon" style="font-size:26px;">Leaderboard</h1>
+      <h1 class="title-block" style="font-size:26px;">Leaderboard</h1>
     </div>
     <div class="tabs">
       <button data-lb="nights" class="${state.lbTab==='nights'?'active':''}">Best Nights</button>
@@ -510,7 +554,7 @@ function viewMyTabs(){
       <button class="back" id="backBtn">← back</button>
     </div>
     <div class="brand" style="margin-bottom:18px;">
-      <h1 class="neon" style="font-size:26px;">My Tabs</h1>
+      <h1 class="title-block" style="font-size:26px;">My Tabs</h1>
     </div>
     <div id="myTabsList">${renderMyTabsList()}</div>
   </div>`;
@@ -558,14 +602,17 @@ function viewTabDetail(){
       <button class="back" id="backBtn">← back</button>
     </div>
     <div class="receipt">
+      ${r.status !== 'active' ? `<div class="stamp"><svg width="100%" height="100%"><use href="#goose-stamp"/></svg></div>` : ''}
       <div class="code-row">
         <span class="code-label">Tab #${r.code}</span>
         <span class="code-value">${r.status === 'active' ? '🟢 live' : '✅ closed'}</span>
       </div>
       <div class="dash"></div>
       <div class="gpd-hero">
-        <div class="label">Giggles Per Drink</div>
-        <div class="value mono">${r.gpd.toFixed(2)}</div>
+        <div class="badge-row">
+          <div class="badge-ring"><div class="value mono">${r.gpd.toFixed(2)}</div></div>
+          <div class="badge-label">Giggles<br/>per drink</div>
+        </div>
         <div class="sub">hosted by ${r.owner}</div>
       </div>
       <div class="dash"></div>
