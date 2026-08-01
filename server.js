@@ -1,5 +1,6 @@
 const express = require('express');
 const path = require('path');
+const fs = require('fs');
 const Database = require('better-sqlite3');
 const { customAlphabet } = require('nanoid');
 
@@ -9,7 +10,9 @@ const app = express();
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
 
-const db = new Database(path.join(__dirname, 'gpd.db'));
+const dataDir = process.env.DATA_DIR || __dirname;
+fs.mkdirSync(dataDir, { recursive: true });
+const db = new Database(path.join(dataDir, 'gpd.db'));
 db.pragma('journal_mode = WAL');
 
 db.exec(`
