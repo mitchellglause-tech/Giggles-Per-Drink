@@ -1,4 +1,6 @@
-# Giggles Per Drink (GPD)
+# HONK'D
+
+**Live:** https://honkd-production.up.railway.app · **Repo:** https://github.com/mitchellglause-tech/HONKD
 
 A live party tab: `GPD = Total Giggle Score ÷ Total Drink Units`. No login, no accounts — just names.
 
@@ -38,7 +40,7 @@ Both give you a real `https://...` URL — that's the link you text to the group
 - Everyone starts by typing a name (no password). Returning users type the same name to resume their profile — an avatar is deterministically assigned from the name.
 - One person **starts a tab** → becomes Owner, gets a 4-character room code to read aloud.
 - Everyone else **joins the tab** with that code → becomes a Friend.
-- Owner sees only drink-logging buttons (Beer / Wine / Cocktail / Shot). Friends see only giggle-logging buttons (Chuckle → Legendary).
+- Everyone logs their own drinks (Beer / Wine / Cocktail / Shot). Giggles work the other way — you rate *other* people's giggles (Chuckle → HONK'D → Legendary), not your own.
 - All connected devices poll the room every 3 seconds, so the GPD, live ranking, and stats stay in sync across every phone within a few seconds.
 - **Owner closes the tab** → the night gets archived to the all-time "Best Nights" leaderboard, and every participating friend's lifetime points/nights-played/best-night get credited to their persistent profile.
 - Leaving a tab just stops watching it — it keeps running until the Owner closes it out. Refreshing mid-session rejoins the same room automatically (stored in `localStorage`).
